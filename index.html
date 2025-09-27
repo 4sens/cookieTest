@@ -1,14 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-
+    <meta charset="utf-8" />
+    <title>Cookie Setter Demo</title>
+    <style>
+        button {
+            display: block;
+            margin: 0.5em 0;
+            padding: 0.6em 1em;
+            font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
+<h1>Cookie Setter Demo</h1>
 
-<h1>
-    Test!
-</h1>
+<button id="btnNone">Set Cookie (SameSite=None)</button>
+<button id="btnStrict">Set Cookie (SameSite=Strict)</button>
+<button id="btnLax">Set Cookie (SameSite=Lax)</button>
+
+<hr>
+<button id="goto">Go to cookie test page</button>
+
+<p id="info"></p>
+
+<script>
+    const targetDomain = "4sens.github.io";
+    const info = document.getElementById("info");
+
+    function randomValue(len = 16) {
+        const chars = "abcdef0123456789";
+        let out = "";
+        for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+        return out;
+    }
+
+    function setCookie(sameSiteValue) {
+        const val = randomValue();
+        const expires = new Date(Date.now() + 7*24*60*60*1000).toUTCString();
+
+        document.cookie =
+            `testcookie_${sameSiteValue}=${val}` +
+            `; Path=/` +
+            `; Domain=${targetDomain}` +
+            `; SameSite=${sameSiteValue}` +
+            `; Secure` +            // Secure ist nötig für SameSite=None und allgemein empfohlen
+            `; Expires=${expires}`;
+
+        info.textContent = `Cookie gesetzt: testcookie_${sameSiteValue}=${val}; SameSite=${sameSiteValue}`;
+    }
+
+    document.getElementById("btnNone").onclick = () => setCookie("None");
+    document.getElementById("btnStrict").onclick = () => setCookie("Strict");
+    document.getElementById("btnLax").onclick = () => setCookie("Lax");
+
+    document.getElementById("goto").onclick = () => {
+        window.location.href = "https://4sens.github.io/cookieTest";
+    };
+</script>
 </body>
 </html>
